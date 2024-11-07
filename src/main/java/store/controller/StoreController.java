@@ -4,30 +4,27 @@ import store.domain.*;
 import store.view.InputView;
 import store.view.OutputView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class StoreController {
 
     private final InputView inputView;
     private final OutputView outputView;
     private final Products products;
-    private final OrderProcessor orderProcessor;
+    private final OrderService orderService;
 
     public StoreController(final InputView inputView, final OutputView outputView) {
         this.inputView = inputView;
         this.outputView = outputView;
         this.products = new Products();
-        this.orderProcessor = new OrderProcessor(products, new PromotionService());
+        this.orderService = new OrderService(products, new PromotionService(), new Storage());
     }
 
     public void run() {
         while (true) {
             outputView.showStore();
             outputView.showProduct(products);
-            List<OrderItem> orderItems = orderProcessor.processOrder(inputView.orderInput());
+            List<OrderItem> orderItems = orderService.processOrder(inputView.orderInput());
             showOrderDetails(orderItems);
         }
     }
