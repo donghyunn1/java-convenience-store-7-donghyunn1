@@ -5,15 +5,13 @@ import java.util.List;
 
 public class Promotions {
 
-    List<Promotion> promotions = new ArrayList<>();
+    List<Promotion> promotions = PromotionFileReader.readPromotions();
 
     public Promotions() {
-        this.promotions = PromotionFileReader.readPromotions();
+        this.promotions = getPromotions();
     }
 
     public List<Promotion> getPromotions() {
         return promotions;
     }
-
-
 }
