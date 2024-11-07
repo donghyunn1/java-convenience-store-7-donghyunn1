@@ -1,6 +1,5 @@
 package store.view;
 
-import store.domain.Product;
 import store.domain.Products;
 
 public class OutputView {
