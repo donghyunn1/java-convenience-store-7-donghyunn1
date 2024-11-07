@@ -4,7 +4,6 @@ import java.util.List;
 
 public class Products {
 
-
     private static List<Product> products = ProductFileReader.readProducts();
 
     public void displayProducts() {
@@ -12,6 +11,4 @@ public class Products {
             System.out.println(product);
         }
     }
-
-
 }

@@ -18,6 +18,18 @@ public class Product {
         return name;
     }
 
+    public int getPrice() {
+        return price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String getPromotion() {
+        return promotion;
+    }
+
     @Override
     public String toString() {
         if (this.promotion.equals("null")) {
