@@ -5,9 +5,9 @@ public class Product {
     private String name;
     private int price;
     private int quantity;
-    private Promotion promotion;
+    private String promotion;
 
-    public Product(String name, int price, int quantity, Promotion promotion) {
+    public Product(String name, int price, int quantity, String promotion) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
@@ -30,16 +30,15 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public Promotion getPromotion() {
+    public String getPromotion() {
         return promotion;
     }
 
     @Override
     public String toString() {
-        String promotionName = "";
-        if (promotion != null) {
-            promotionName = promotion.getPromotionName();
+        if (promotion == "null") {
+            this.promotion = "";
         }
-            return "- " + this.name + " " + this.price + "원 " + this.quantity + "개 " + promotionName;
+            return "- " + this.name + " " + this.price + "원 " + this.quantity + "개 " + this.promotion;
     }
 }
