@@ -14,57 +14,22 @@ public class StoreController {
     private final InputView inputView;
     private final OutputView outputView;
     private final Products products;
+    private final OrderProcessor orderProcessor;
 
     public StoreController(final InputView inputView, final OutputView outputView) {
         this.inputView = inputView;
         this.outputView = outputView;
         this.products = new Products();
+        this.orderProcessor = new OrderProcessor(products, new PromotionService());
     }
 
     public void run() {
         while (true) {
             outputView.showStore();
             outputView.showProduct(products);
-            List<OrderItem> orderItems = processOrder(inputView.orderInput());
+            List<OrderItem> orderItems = orderProcessor.processOrder(inputView.orderInput());
             showOrderDetails(orderItems);
         }
-    }
-
-    private List<OrderItem> processOrder(String input) {
-        Pattern pattern = Pattern.compile("\\[(.*?)-(\\d+)\\]");
-        Matcher matcher = pattern.matcher(input);
-
-        List<OrderItem> orderItems = new ArrayList<>();
-
-        while (matcher.find()) {
-            String productName = matcher.group(1);
-            int purchaseQuantity = Integer.parseInt(matcher.group(2));
-
-            Product product = products.findProductByName(productName);
-            if (product != null) {
-                int quantityOfProduct = product.getQuantity();
-
-                if (quantityOfProduct >= purchaseQuantity) {
-                    int totalPrice = product.getPrice() * purchaseQuantity;
-                    orderItems.add(new OrderItem(product, purchaseQuantity, totalPrice));
-
-                    //프로모션 로직
-                    if (product.getPromotion() != null) {
-                        String promotionName = product.getPromotion();
-
-                        if (promotionName.equals("탄산2+1") && (purchaseQuantity % 2) == 1) {
-                            System.out.println("현재 {"+ productName +"}은(는) 1개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)");
-                        }
-                        if (promotionName.equals("MD추천상품") || promotionName.equals("반짝할인") && (purchaseQuantity == 1)) {
-                            System.out.println("현재 {"+ productName +"}은(는) 1개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)");
-                        }
-                    }
-                }
-                int updateQuantity = quantityOfProduct - purchaseQuantity - 1;
-                product.setQuantity(updateQuantity);
-            }
-        }
-        return orderItems;
     }
 
     public void showOrderDetails(List<OrderItem> orderItems) {

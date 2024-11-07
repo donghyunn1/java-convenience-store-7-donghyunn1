@@ -36,7 +36,7 @@ public class Product {
 
     @Override
     public String toString() {
-        if (promotion == "null") {
+        if (this.promotion.equals("null")) {
             this.promotion = "";
         }
             return "- " + this.name + " " + this.price + "원 " + this.quantity + "개 " + this.promotion;
