@@ -1,5 +1,6 @@
 package store.domain.store;
 
+import camp.nextstep.edu.missionutils.DateTimes;
 import store.domain.file.FileLoader;
 import store.domain.product.Product;
 import store.domain.promotion.Promotion;
@@ -30,6 +31,23 @@ public class Store {
                     " " + product.getPromotion() : "";
             System.out.printf("- %s %,d원 %s%s\n",
                     product.getName(), product.getPrice(), quantityStatus, promotionInfo);
+        }
+    }
+
+    private void processPromotionProduct(Product product, int orderQuantity, Receipt receipt, Map<String, Integer> freeItems) {
+
+        Promotion promotion = promotions.get(product.getPromotion());
+        if (promotion.isValidOnDate(DateTimes.now().toLocalDate())) {
+            int sets = orderQuantity / (promotion.getBuy() + promotion.getGet());
+            int remainItems = Math.min(orderQuantity % (promotion.getBuy() + promotion.getGet()), product.getQuantity());
+
+            if (sets > 0) {
+                applyPromotionDiscount(product, sets, promotion, receipt, freeItems);
+            }
+
+            if (remainItems > 0) {
+                addRegularItems(product, remainItems, receipt);
+            }
         }
     }
 
