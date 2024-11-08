@@ -33,6 +33,11 @@ public class Store {
         }
     }
 
+    private boolean isPromotionProduct(Product product) {
+        return product.getPromotion() != null && product.getQuantity() > 0
+                && promotions.containsKey(product.getPromotion());
+    }
+
     private List<Product> findProductsByName(String productName) {
         return products.stream()
                 .filter(p -> p.getName().equals(productName))
