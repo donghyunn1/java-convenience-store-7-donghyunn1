@@ -34,6 +34,17 @@ public class Store {
         }
     }
 
+    private void processProductOrder(List<Product> availableProducts, int orderQuantity, Receipt receipt, Map<String, Integer> freeItems) {
+
+        for (Product product : availableProducts) {
+            if (isPromotionProduct(product)) {
+                processPromotionProduct(product, orderQuantity, receipt, freeItems);
+            } else {
+                processRegularProduct(product, orderQuantity, receipt);
+            }
+        }
+    }
+
     private void processPromotionProduct(Product product, int orderQuantity, Receipt receipt, Map<String, Integer> freeItems) {
 
         Promotion promotion = promotions.get(product.getPromotion());
