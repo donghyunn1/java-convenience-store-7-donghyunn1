@@ -3,6 +3,7 @@ package store.domain.store;
 import store.domain.file.FileLoader;
 import store.domain.product.Product;
 import store.domain.promotion.Promotion;
+import store.domain.receipt.Receipt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,5 +31,12 @@ public class Store {
             System.out.printf("- %s %,d원 %s%s\n",
                     product.getName(), product.getPrice(), quantityStatus, promotionInfo);
         }
+    }
+
+    private List<Product> findProductsByName(String productName) {
+        return products.stream()
+                .filter(p -> p.getName().equals(productName))
+                .filter(p -> p.getQuantity() > 0)
+                .toList();
     }
 }
