@@ -33,16 +33,30 @@ public class Store {
         }
     }
 
-    private void processRegularProduct(Product product, int orderQuantity, Receipt receipt) {
-        int purchaseQuantity = Math.min(orderQuantity, product.getQuantity());
-        if (purchaseQuantity > 0) {
-            addRegularItems(product, purchaseQuantity, receipt);
-        }
+    private void applyPromotionDiscount(Product product, int sets, Promotion promotion,
+                                        Receipt receipt, Map<String, Integer> freeItems) {
+
+        int totalItems = sets * (promotion.getBuy() + promotion.getGet());
+        int freeItemCount = sets * promotion.getGet();
+
+        freeItems.put(product.getName(),
+                freeItems.getOrDefault(product.getName(), 0) + freeItemCount);
+
+        receipt.addItem(product, totalItems - freeItemCount);
+        product.setQuantity(product.getQuantity() - totalItems);
+        receipt.addPromotionalDiscount(freeItemCount * product.getPrice());
     }
 
     private boolean isPromotionProduct(Product product) {
         return product.getPromotion() != null && product.getQuantity() > 0
                 && promotions.containsKey(product.getPromotion());
+    }
+
+    private void processRegularProduct(Product product, int orderQuantity, Receipt receipt) {
+        int purchaseQuantity = Math.min(orderQuantity, product.getQuantity());
+        if (purchaseQuantity > 0) {
+            addRegularItems(product, purchaseQuantity, receipt);
+        }
     }
 
     private void addRegularItems(Product product, int quantity, Receipt receipt) {
