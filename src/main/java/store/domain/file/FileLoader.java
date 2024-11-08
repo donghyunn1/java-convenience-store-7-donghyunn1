@@ -1,4 +1,7 @@
-package store.domain;
+package store.domain.file;
+
+import store.domain.product.Product;
+import store.domain.promotion.Promotion;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,6 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 public class FileLoader {
+
+    public FileLoader() {
+        loadProducts();
+        loadPromotions();
+    }
 
     private static final String PRODUCTS_PATH = "src/main/resources/products.md";
     private static final String PROMOTIONS_PATH = "src/main/resources/promotions.md";
