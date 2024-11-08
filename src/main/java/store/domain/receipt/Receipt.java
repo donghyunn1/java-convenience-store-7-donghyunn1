@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Receipt {
 
-    private Map<Product, Integer> items;
+    private Map<String, ReceiptItem> items;
     private Map<String, Integer> freeItems;
     private int promotionDiscount;
 
@@ -18,7 +18,11 @@ public class Receipt {
     }
 
     public void addItem(Product product, int quantity) {
-        items.put(product, items.getOrDefault(product, 0) + quantity);
+        String productName = product.getName();
+        if (!items.containsKey(productName)) {
+            items.put(productName, new ReceiptItem(product.getPrice()));
+        }
+        items.get(productName).addQuantity(quantity);
     }
 
     public void setFreeItems(Map<String, Integer> freeItems) {
@@ -30,8 +34,8 @@ public class Receipt {
     }
 
     public int getTotalAmount() {
-        return items.entrySet().stream()
-                .mapToInt(entry -> entry.getKey().getPrice() * entry.getValue())
+        return items.values().stream()
+                .mapToInt(ReceiptItem::getTotalPrice)
                 .sum();
     }
 
@@ -41,7 +45,7 @@ public class Receipt {
 
     private int getTotalQuantity() {
         return items.values().stream()
-                .mapToInt(Integer::intValue)
+                .mapToInt(ReceiptItem::getQuantity)
                 .sum();
     }
 
@@ -59,21 +63,24 @@ public class Receipt {
 
     private void printHeader() {
         System.out.println("==============W 편의점================");
-        System.out.println("상품명\t\t\t수량\t\t금액");
+        System.out.println(String.format("%-8s %6s %12s", "상품명", "수량", "금액"));
     }
 
     private void printItems() {
-        for (Map.Entry<Product, Integer> entry : items.entrySet()) {
-            Product product = entry.getKey();
-            int quantity = entry.getValue();
-            System.out.printf("%s\t\t\t%d\t\t%,d\n", product.getName(), quantity, product.getPrice() * quantity);
+        for (Map.Entry<String, ReceiptItem> entry : items.entrySet()) {
+            String productName = entry.getKey();
+            ReceiptItem item = entry.getValue();
+            System.out.printf("%-8s %6d %,12d\n",
+                    productName,
+                    item.getQuantity(),
+                    item.getTotalPrice());
         }
     }
 
     private void printFreeItems() {
         System.out.println("=============증     정===============");
         for (Map.Entry<String, Integer> entry : freeItems.entrySet()) {
-            System.out.printf("%s\t\t\t%d\n", entry.getKey(), entry.getValue());
+            System.out.printf("%-8s %6d\n", entry.getKey(), entry.getValue());
         }
     }
 
@@ -82,8 +89,8 @@ public class Receipt {
     }
 
     private void printSummary() {
-        System.out.printf("총구매액\t\t\t%d %,d\n", getTotalQuantity(), getTotalAmount());
-        System.out.printf("행사할인\t\t\t-%,d\n", promotionDiscount);
-        System.out.printf("내실돈\t\t\t\t\t%,d\n", getFinalAmount());
+        System.out.printf("총구매액   %6d %,12d\n", getTotalQuantity(), getTotalAmount());
+        System.out.printf("행사할인         %,12d\n", -promotionDiscount);
+        System.out.printf("내실돈           %,12d\n", getFinalAmount());
     }
 }
