@@ -9,15 +9,15 @@ import java.util.Date;
 public class Promotion {
 
     private String promotionName;
-    private int requiredQuantity;
-    private int countOfBonus;
+    private int buy;
+    private int get;
     private LocalDate startDate;
     private LocalDate endDate;
 
-    public Promotion(String promotionName, int requiredQuantity, int countOfBonus, LocalDate startDate, LocalDate endDate) {
+    public Promotion(String promotionName, int buy, int get, LocalDate startDate, LocalDate endDate) {
         this.promotionName = promotionName;
-        this.requiredQuantity = requiredQuantity;
-        this.countOfBonus = countOfBonus;
+        this.buy = buy;
+        this.get = get;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -26,15 +26,15 @@ public class Promotion {
         return promotionName;
     }
 
-    public int getRequiredQuantity() {
-        return requiredQuantity;
+    public int getBuy() {
+        return buy;
     }
 
-    public int getCountOfBonus() {
-        return countOfBonus;
+    public int getGet() {
+        return get;
     }
 
-    public boolean isActive(LocalDate currentDate) {
-        return startDate.isBefore(currentDate) && endDate.isAfter(currentDate);
+    public boolean isValidOnDate(LocalDate date) {
+        return !date.isBefore(startDate) && !date.isAfter(endDate);
     }
 }

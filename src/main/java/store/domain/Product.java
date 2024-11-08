@@ -33,12 +33,4 @@ public class Product {
     public String getPromotion() {
         return promotion;
     }
-
-    @Override
-    public String toString() {
-        if (this.promotion.equals("null")) {
-            this.promotion = "";
-        }
-            return "- " + this.name + " " + this.price + "원 " + this.quantity + "개 " + this.promotion;
-    }
 }
