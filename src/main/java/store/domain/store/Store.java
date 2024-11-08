@@ -33,6 +33,13 @@ public class Store {
         }
     }
 
+    private void processRegularProduct(Product product, int orderQuantity, Receipt receipt) {
+        int purchaseQuantity = Math.min(orderQuantity, product.getQuantity());
+        if (purchaseQuantity > 0) {
+            addRegularItems(product, purchaseQuantity, receipt);
+        }
+    }
+
     private boolean isPromotionProduct(Product product) {
         return product.getPromotion() != null && product.getQuantity() > 0
                 && promotions.containsKey(product.getPromotion());
