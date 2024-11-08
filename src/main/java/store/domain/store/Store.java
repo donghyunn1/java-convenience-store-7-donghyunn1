@@ -39,43 +39,60 @@ public class Store {
         Map<String, Integer> freeItems = new HashMap<>();
 
         for (Map.Entry<String, Integer> entry : orderItems.entrySet()) {
-            processProductOrder(
-                    findProductsByName(entry.getKey()),
-                    entry.getValue(),
-                    receipt,
-                    freeItems
-            );
-        }
+            String productName = entry.getKey();
+            int orderQuantity = entry.getValue();
 
-        receipt.setFreeItems(freeItems);
-        return receipt;
-    }
+            // 상품 찾기
+            Product product = findFirstAvailableProduct(productName);
+            if (product == null) continue;
 
-    private void processProductOrder(List<Product> availableProducts, int orderQuantity, Receipt receipt, Map<String, Integer> freeItems) {
-
-        for (Product product : availableProducts) {
+            // 프로모션 적용 여부에 따라 처리
             if (isPromotionProduct(product)) {
                 processPromotionProduct(product, orderQuantity, receipt, freeItems);
             } else {
                 processRegularProduct(product, orderQuantity, receipt);
             }
         }
+
+        receipt.setFreeItems(freeItems);
+        return receipt;
+    }
+
+    private Product findFirstAvailableProduct(String productName) {
+        return products.stream()
+                .filter(p -> p.getName().equals(productName))
+                .filter(p -> p.getQuantity() > 0)
+                .findFirst()
+                .orElse(null);
     }
 
     private void processPromotionProduct(Product product, int orderQuantity, Receipt receipt, Map<String, Integer> freeItems) {
 
         Promotion promotion = promotions.get(product.getPromotion());
+
         if (promotion.isValidOnDate(DateTimes.now().toLocalDate())) {
             int sets = orderQuantity / (promotion.getBuy() + promotion.getGet());
+            int paidItems = sets * promotion.getBuy();
+            int freeItemCount = sets * promotion.getGet();
+
             int remainItems = Math.min(orderQuantity % (promotion.getBuy() + promotion.getGet()), product.getQuantity());
 
-            if (sets > 0) {
-                applyPromotionDiscount(product, sets, promotion, receipt, freeItems);
+            if (paidItems > 0) {
+                receipt.addItem(product, paidItems);
+                if (freeItemCount > 0) {
+                    freeItems.put(product.getName(),
+                            freeItems.getOrDefault(product.getName(), 0) + freeItemCount);
+                }
+                receipt.addPromotionalDiscount(freeItemCount * product.getPrice());
+                product.setQuantity(product.getQuantity() - (paidItems + freeItemCount));
             }
 
             if (remainItems > 0) {
-                addRegularItems(product, remainItems, receipt);
+                receipt.addItem(product, remainItems);
+                product.setQuantity(product.getQuantity() - remainItems);
             }
+        } else {
+            processRegularProduct(product, orderQuantity, receipt);
         }
     }
 
