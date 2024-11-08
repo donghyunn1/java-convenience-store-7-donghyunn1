@@ -38,6 +38,11 @@ public class Store {
                 && promotions.containsKey(product.getPromotion());
     }
 
+    private void addRegularItems(Product product, int quantity, Receipt receipt) {
+        receipt.addItem(product, quantity);
+        product.setQuantity(product.getQuantity() - quantity);
+    }
+
     private List<Product> findProductsByName(String productName) {
         return products.stream()
                 .filter(p -> p.getName().equals(productName))
