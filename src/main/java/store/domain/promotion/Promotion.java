@@ -1,10 +1,6 @@
-package store.domain;
-
-import camp.nextstep.edu.missionutils.DateTimes;
+package store.domain.promotion;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 public class Promotion {
 
