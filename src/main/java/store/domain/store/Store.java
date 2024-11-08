@@ -34,6 +34,23 @@ public class Store {
         }
     }
 
+    public Receipt processOrder(Map<String, Integer> orderItems) {
+        Receipt receipt = new Receipt();
+        Map<String, Integer> freeItems = new HashMap<>();
+
+        for (Map.Entry<String, Integer> entry : orderItems.entrySet()) {
+            processProductOrder(
+                    findProductsByName(entry.getKey()),
+                    entry.getValue(),
+                    receipt,
+                    freeItems
+            );
+        }
+
+        receipt.setFreeItems(freeItems);
+        return receipt;
+    }
+
     private void processProductOrder(List<Product> availableProducts, int orderQuantity, Receipt receipt, Map<String, Integer> freeItems) {
 
         for (Product product : availableProducts) {
