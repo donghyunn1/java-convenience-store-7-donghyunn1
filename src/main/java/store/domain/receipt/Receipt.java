@@ -9,10 +9,12 @@ public class Receipt {
 
     private Map<String, ReceiptItem> items;
     private int promotionDiscount;
+    private int membershipDiscount;
 
     public Receipt() {
         this.items = new HashMap<>();
         this.promotionDiscount = 0;
+        this.membershipDiscount = 0;
     }
 
     public void addItem(Product product, int quantity) {
@@ -52,6 +54,14 @@ public class Receipt {
         return items.values().stream()
                 .mapToInt(ReceiptItem::getQuantity)
                 .sum();
+    }
+
+    public void setMembershipDiscount(int membershipDiscount) {
+        this.membershipDiscount = membershipDiscount;
+    }
+
+    public int getNonPromotionAmount() {
+        return getTotalAmount() - promotionDiscount;
     }
 
     private int getFinalAmount() {
@@ -98,6 +108,7 @@ public class Receipt {
     private void printSummary() {
         System.out.printf("총구매액   %6d %,12d\n", getTotalQuantity(), getTotalAmount());
         System.out.printf("행사할인         %,12d\n", -promotionDiscount);
+        System.out.printf("멤버십할인       %,12d\n", -membershipDiscount);
         System.out.printf("내실돈           %,12d\n", getFinalAmount());
     }
 }
