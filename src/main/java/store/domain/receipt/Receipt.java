@@ -69,7 +69,7 @@ public class Receipt {
     }
 
     private int getFinalAmount() {
-        return getTotalAmount()  - promotionDiscount;
+        return getTotalAmount()  - promotionDiscount - membershipDiscount;
     }
 
     public void print() {
