@@ -33,4 +33,11 @@ public class Product {
     public String getPromotion() {
         return promotion;
     }
+
+    public void decreaseQuantity(int amount) {
+        if (amount > this.quantity) {
+            throw new IllegalArgumentException("[ERROR] 재고가 충분하지 않습니다.");
+        }
+        this.quantity -= amount;
+    }
 }
