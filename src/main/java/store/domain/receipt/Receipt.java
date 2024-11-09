@@ -50,6 +50,10 @@ public class Receipt {
         return promotionDiscount;
     }
 
+    public Map<String, ReceiptItem> getItems() {
+        return items;
+    }
+
     private int getTotalQuantity() {
         return items.values().stream()
                 .mapToInt(ReceiptItem::getQuantity)
