@@ -2,6 +2,7 @@ package store;
 
 import camp.nextstep.edu.missionutils.Console;
 import store.domain.order.OrderParser;
+import store.domain.receipt.Receipt;
 import store.domain.store.Store;
 
 import java.util.Map;
@@ -26,9 +27,22 @@ public class Application {
         try {
             store.displayProducts();
             String orderInput = receiveOrder();
+            Map<String, Integer> orderItems = OrderParser.parse(orderInput);
+
+            Map<String, Integer> finalOrderItems = store.promotionAddSuggestion(orderItems);
+
+            boolean isMemberShip = useMembership();
+
+            Receipt receipt = store.processOrder(finalOrderItems, isMemberShip);
+            receipt.print();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private static boolean useMembership() {
+        System.out.println("멤버십 할인을 받으시겠습니까? (Y/N)");
+        return Console.readLine().equals("Y");
     }
 
     private static String receiveOrder() {

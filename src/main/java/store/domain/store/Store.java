@@ -66,6 +66,32 @@ public class Store {
         return receipt;
     }
 
+    public Map<String, Integer> promotionAddSuggestion(Map<String, Integer> orderItems) {
+        Map<String, Integer> updatedOrders = new HashMap<>(orderItems);
+
+        for (Map.Entry<String, Integer> entry : orderItems.entrySet()) {
+            String productName = entry.getKey();
+            int orderQuantity = entry.getValue();
+
+            Product product = findFirstAvailableProduct(productName);
+            if (product == null || !isPromotionProduct(product)) continue;
+
+            Promotion promo = promotions.get(product.getPromotion());
+            int buyCount = promo.getBuy();
+            int getCount = promo.getGet();
+
+            // 프로모션 조건 미달 체크
+            if (orderQuantity > 0 && orderQuantity < (buyCount + getCount) &&
+                    product.getQuantity() >= (buyCount + getCount)) {
+                System.out.printf("현재 %s은(는) %d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)\n", productName, getCount);
+                if (Console.readLine().equalsIgnoreCase("Y")) {
+                    updatedOrders.put(productName, buyCount + getCount);
+                }
+            }
+        }
+        return updatedOrders;
+    }
+
     private void applyMembershipDiscount(Receipt receipt) {
         int nonPromotionAmount = receipt.getItems().entrySet().stream()
                 .filter(entry -> !isPromotionApplied(entry.getKey()))
