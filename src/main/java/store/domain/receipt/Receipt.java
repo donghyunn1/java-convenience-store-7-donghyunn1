@@ -8,12 +8,10 @@ import java.util.Map;
 public class Receipt {
 
     private Map<String, ReceiptItem> items;
-    private Map<String, Integer> freeItems;
     private int promotionDiscount;
 
     public Receipt() {
         this.items = new HashMap<>();
-        this.freeItems = new HashMap<>();
         this.promotionDiscount = 0;
     }
 
@@ -26,16 +24,23 @@ public class Receipt {
     }
 
     public void setFreeItems(Map<String, Integer> freeItems) {
-        this.freeItems = new HashMap<>(freeItems);
+        for (Map.Entry<String, Integer> entry : freeItems.entrySet()) {
+            String productName = entry.getKey();
+            int freeQuantity = entry.getValue();
+            if (!items.containsKey(productName)) {
+                continue;
+            }
+            items.get(productName).addFreeQuantity(freeQuantity);
+        }
     }
 
     public void addPromotionalDiscount(int promotionDiscount) {
-        this.promotionDiscount = promotionDiscount;
+        this.promotionDiscount += promotionDiscount;
     }
 
     public int getTotalAmount() {
         return items.values().stream()
-                .mapToInt(ReceiptItem::getTotalPrice)
+                .mapToInt(item -> item.getPrice() * item.getQuantity())
                 .sum();
     }
 
@@ -70,17 +75,19 @@ public class Receipt {
         for (Map.Entry<String, ReceiptItem> entry : items.entrySet()) {
             String productName = entry.getKey();
             ReceiptItem item = entry.getValue();
-            System.out.printf("%-8s %6d %,12d\n",
-                    productName,
-                    item.getQuantity(),
-                    item.getTotalPrice());
+            int totalQuantity = item.getQuantity();
+            int pricePerItem = item.getPrice();
+            int totalPrice = totalQuantity * pricePerItem;
+            System.out.printf("%-8s %6d %,12d\n", productName, totalQuantity, totalPrice);
         }
     }
 
     private void printFreeItems() {
         System.out.println("=============증     정===============");
-        for (Map.Entry<String, Integer> entry : freeItems.entrySet()) {
-            System.out.printf("%-8s %6d\n", entry.getKey(), entry.getValue());
+        for (Map.Entry<String, ReceiptItem> entry : items.entrySet()) {
+            ReceiptItem item = entry.getValue();
+            if (item.getFreeQuantity() > 0)
+            System.out.printf("%-8s %6d\n", entry.getKey(), item.getFreeQuantity());
         }
     }
 

@@ -1,5 +1,6 @@
 package store.domain.store;
 
+import camp.nextstep.edu.missionutils.Console;
 import camp.nextstep.edu.missionutils.DateTimes;
 import store.domain.file.FileLoader;
 import store.domain.product.Product;
@@ -42,11 +43,9 @@ public class Store {
             String productName = entry.getKey();
             int orderQuantity = entry.getValue();
 
-            // 상품 찾기
             Product product = findFirstAvailableProduct(productName);
             if (product == null) continue;
 
-            // 프로모션 적용 여부에 따라 처리
             if (isPromotionProduct(product)) {
                 processPromotionProduct(product, orderQuantity, receipt, freeItems);
             } else {
@@ -69,45 +68,36 @@ public class Store {
     private void processPromotionProduct(Product product, int orderQuantity, Receipt receipt, Map<String, Integer> freeItems) {
 
         Promotion promotion = promotions.get(product.getPromotion());
+        int buyCount = promotion.getBuy();
+        int getCount = promotion.getGet();
 
-        if (promotion.isValidOnDate(DateTimes.now().toLocalDate())) {
-            int sets = orderQuantity / (promotion.getBuy() + promotion.getGet());
-            int paidItems = sets * promotion.getBuy();
-            int freeItemCount = sets * promotion.getGet();
+        //프로모션 조건에 맞게 가져오지 않은 경우
+        if (orderQuantity < (buyCount + getCount) && product.getQuantity() >= (buyCount + getCount)) {
 
-            int remainItems = Math.min(orderQuantity % (promotion.getBuy() + promotion.getGet()), product.getQuantity());
-
-            if (paidItems > 0) {
-                receipt.addItem(product, paidItems);
-                if (freeItemCount > 0) {
-                    freeItems.put(product.getName(),
-                            freeItems.getOrDefault(product.getName(), 0) + freeItemCount);
-                }
-                receipt.addPromotionalDiscount(freeItemCount * product.getPrice());
-                product.setQuantity(product.getQuantity() - (paidItems + freeItemCount));
+            // 추가 구매 제안
+            if (askAddItems(product, buyCount, getCount)) {
+                orderQuantity = buyCount + getCount;
+                processPromotionSet(product, buyCount, getCount, receipt, freeItems);
+            } else {
+                processRegularProduct(product, orderQuantity, receipt);
             }
-
-            if (remainItems > 0) {
-                receipt.addItem(product, remainItems);
-                product.setQuantity(product.getQuantity() - remainItems);
-            }
-        } else {
-            processRegularProduct(product, orderQuantity, receipt);
         }
     }
 
-    private void applyPromotionDiscount(Product product, int sets, Promotion promotion,
-                                        Receipt receipt, Map<String, Integer> freeItems) {
+    private void processPromotionSet(Product product, int paidItems, int freeItemCount,
+                                     Receipt receipt, Map<String, Integer> freeItems) {
 
-        int totalItems = sets * (promotion.getBuy() + promotion.getGet());
-        int freeItemCount = sets * promotion.getGet();
-
+        receipt.addItem(product, paidItems);
         freeItems.put(product.getName(),
                 freeItems.getOrDefault(product.getName(), 0) + freeItemCount);
-
-        receipt.addItem(product, totalItems - freeItemCount);
-        product.setQuantity(product.getQuantity() - totalItems);
         receipt.addPromotionalDiscount(freeItemCount * product.getPrice());
+        product.setQuantity(product.getQuantity() - (paidItems + freeItemCount));
+    }
+
+    private boolean askAddItems(Product product, int buyCount, int getCount) {
+        System.out.printf("현재 %s은(는) %d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)\n", product.getName(), getCount);
+        String answer = Console.readLine();
+        return answer.equals("Y");
     }
 
     private boolean isPromotionProduct(Product product) {
