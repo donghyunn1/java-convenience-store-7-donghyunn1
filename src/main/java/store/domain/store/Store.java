@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Store {
+
+    private static final int MEMBERSHIP_DISCOUNT_RATE = 30;
+    private static final int MAX_MEMBERSHIP_DISCOUNT = 8000;
+
     private final List<Product> products;
     private final Map<String, Promotion> promotions;
 
@@ -35,7 +39,7 @@ public class Store {
         }
     }
 
-    public Receipt processOrder(Map<String, Integer> orderItems) {
+    public Receipt processOrder(Map<String, Integer> orderItems, boolean useMemberShip) {
         Receipt receipt = new Receipt();
         Map<String, Integer> freeItems = new HashMap<>();
 
@@ -54,7 +58,25 @@ public class Store {
         }
 
         receipt.setFreeItems(freeItems);
+
+        if (useMemberShip) {
+            applyMembershipDiscount(receipt);
+        }
+
         return receipt;
+    }
+
+    private void applyMembershipDiscount(Receipt receipt) {
+        int nonPromotionAmount = receipt.getItems().entrySet().stream()
+                .filter(entry -> !isPromotionApplied(entry.getKey()))
+                .mapToInt(entry -> entry.getValue().getTotalPrice())
+                .sum();
+
+        int membershipDiscount = (nonPromotionAmount * MEMBERSHIP_DISCOUNT_RATE / 100);
+
+        membershipDiscount = Math.min(membershipDiscount, MAX_MEMBERSHIP_DISCOUNT);
+
+        receipt.setMembershipDiscount(membershipDiscount);
     }
 
     private Product findFirstAvailableProduct(String productName) {
@@ -145,6 +167,10 @@ public class Store {
         System.out.printf("현재 %s %d개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)\n", product.getName(), quantity);
         String answer = Console.readLine();
         return answer.equals("Y");
+    }
+
+    private boolean isPromotionApplied(String productName) {
+        return findPromotionProduct(productName) != null && findPromotionProduct(productName).getQuantity() > 0;
     }
 
     private boolean isPromotionProduct(Product product) {
