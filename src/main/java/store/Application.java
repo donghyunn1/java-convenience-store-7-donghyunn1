@@ -51,17 +51,6 @@ public class Application {
         }
     }
 
-    private static String receiveOrder() {
-        while (true) {
-            try {
-                System.out.println("구매하실 상품명과 수량을 입력해 주세요. (예: [사이다-2],[감자칩-1])");
-                return Console.readLine();
-            } catch (IllegalArgumentException e) {
-                System.out.println("[ERROR] 잘못된 입력입니다. 다시 입력해 주세요.");
-            }
-        }
-    }
-
     private static boolean askMoreOrders() {
         while (true) {
             try {
