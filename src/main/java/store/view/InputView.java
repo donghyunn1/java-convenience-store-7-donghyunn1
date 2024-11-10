@@ -20,6 +20,7 @@ public class InputView {
                 System.out.println(INPUT_ORDER);
                 String input = Console.readLine();
                 validateOrderInput(input);
+                System.out.println();
                 return input;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
@@ -33,6 +34,7 @@ public class InputView {
                 System.out.println(INPUT_MEMBERSHIP);
                 String input = Console.readLine().toUpperCase();
                 validateInput(input);
+                System.out.println();
                 return input.equals(INPUT_RETRY_YES);
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
@@ -47,6 +49,7 @@ public class InputView {
                 System.out.println();
                 String input = Console.readLine().toUpperCase();
                 validateInput(input);
+                System.out.println();
                 return input.equals(INPUT_RETRY_YES);
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
@@ -61,6 +64,7 @@ public class InputView {
                 System.out.println();
                 String input = Console.readLine().toUpperCase();
                 validateInput(input);
+                System.out.println();
                 return input.equals(INPUT_RETRY_YES);
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());

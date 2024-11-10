@@ -49,11 +49,7 @@ public class OutputView {
 
     private void printReceiptItems(Receipt receipt) {
         receipt.getItems().forEach((name, item) -> {
-            System.out.printf(RECEIPT_ITEMS_FORMAT + "%n",
-                    name,
-                    item.getQuantity(),
-                    item.getPrice() * item.getPaidQuantity()
-            );
+            System.out.printf(RECEIPT_ITEMS_FORMAT + "%n", name, item.getQuantity(), item.getPrice() * item.getPaidQuantity());
         });
     }
 
@@ -61,10 +57,7 @@ public class OutputView {
         System.out.println(FREE_ITEMS_HEADER);
         receipt.getItems().forEach((name, item) -> {
             if (item.getFreeQuantity() > 0) {
-                System.out.printf(FREE_ITEMS_FORMAT + "%n",
-                        name,
-                        item.getFreeQuantity()
-                );
+                System.out.printf(FREE_ITEMS_FORMAT + "%n", name, item.getFreeQuantity());
             }
         });
     }
@@ -74,19 +67,11 @@ public class OutputView {
     }
 
     private void printReceiptSummary(Receipt receipt) {
-        System.out.printf(RECEIPT_TOTAL + "%n",
-                receipt.getTotalQuantity(),
-                receipt.getTotalAmount()
-        );
-        System.out.printf(RECEIPT_PROMOTION + "%n",
-                receipt.getPromotionDiscount()
-        );
-        System.out.printf(RECEIPT_MEMBERSHIP + "%n",
-                receipt.getMembershipDiscount()
-        );
-        System.out.printf(RECEIPT_FINAL + "%n",
-                receipt.getFinalAmount()
-        );
+        System.out.printf(RECEIPT_TOTAL + "%n", receipt.getTotalQuantity(), receipt.getTotalAmount());
+        System.out.printf(RECEIPT_PROMOTION + "%n", receipt.getPromotionDiscount());
+        System.out.printf(RECEIPT_MEMBERSHIP + "%n", receipt.getMembershipDiscount());
+        System.out.printf(RECEIPT_FINAL + "%n", receipt.getFinalAmount());
+        System.out.println();
     }
 
     public void printError(String message) {
