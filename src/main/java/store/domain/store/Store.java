@@ -123,29 +123,21 @@ public class Store {
         Product promotionProduct = findPromotionProduct(product.getName());
         Product regularProduct = findRegularProduct(product.getName());
 
-        // 프로모션 세트 조건 미달 체크
-        if (orderQuantity > 0 && orderQuantity < (buyCount + getCount) &&
-                promotionProduct.getQuantity() >= (buyCount + getCount)) {
-            if (askAddItems(product, getCount)) {
-                orderQuantity = buyCount + getCount;
-            }
-        }
-
         // 프로모션 상품으로 처리할 수 있는 최대 수량 계산
         int maxPromotionQuantity = promotionProduct.getQuantity();
         int maxFullSets = maxPromotionQuantity / (buyCount + getCount);
         int maxPromotionSets = Math.min(orderQuantity / (buyCount + getCount), maxFullSets);
 
         // 프로모션 세트로 처리되는 수량
-        int promotionPaidItems = maxPromotionSets * buyCount;
-        int promotionFreeItems = maxPromotionSets * getCount;
+        int promotionPaidItems = maxPromotionSets * buyCount;  // 실제 구매 수량
+        int promotionFreeItems = maxPromotionSets * getCount;  // 증정 수량
         int totalPromotionSetItems = promotionPaidItems + promotionFreeItems;
 
         // 남은 프로모션 재고 계산
         int remainingPromotionStock = maxPromotionQuantity - totalPromotionSetItems;
         int remainingOrderQuantity = orderQuantity - totalPromotionSetItems;
 
-        // 프로모션 미적용 수량 계산 (남은 프로모션 재고 + 필요한 일반 재고)
+        // 프로모션 미적용 수량 계산
         int nonPromotionItems = remainingOrderQuantity;
         if (nonPromotionItems > 0) {
             if (!askNonPromotionPurchase(product, nonPromotionItems)) {
@@ -157,11 +149,10 @@ public class Store {
 
         // 프로모션 상품 처리 (세트)
         if (promotionPaidItems > 0) {
-            receipt.addItem(promotionProduct, promotionPaidItems);
-            freeItems.put(product.getName(), promotionFreeItems);
+            receipt.addItem(promotionProduct, promotionPaidItems);  // 실제 구매 수량만 추가
+            receipt.setFreeItems(Map.of(product.getName(), promotionFreeItems));  // 증정 수량 설정
             receipt.addPromotionalDiscount(promotionFreeItems * product.getPrice());
-            promotionProduct.setQuantity(promotionProduct.getQuantity() -
-                    (promotionPaidItems + promotionFreeItems));
+            promotionProduct.setQuantity(promotionProduct.getQuantity() - totalPromotionSetItems);
         }
 
         // 남은 수량 처리
@@ -169,16 +160,18 @@ public class Store {
             // 먼저 남은 프로모션 재고 사용
             if (remainingPromotionStock > 0) {
                 int usePromotionStock = Math.min(remainingPromotionStock, remainingOrderQuantity);
-                receipt.addItem(promotionProduct, usePromotionStock);
+                receipt.addItem(promotionProduct, usePromotionStock);  // 추가 구매 수량
                 promotionProduct.setQuantity(promotionProduct.getQuantity() - usePromotionStock);
                 remainingOrderQuantity -= usePromotionStock;
             }
 
-            // 그 다음 일반 재고 사용
+            // 일반 재고 사용
             if (remainingOrderQuantity > 0 && regularProduct != null) {
                 int useRegularStock = Math.min(remainingOrderQuantity, regularProduct.getQuantity());
-                receipt.addItem(regularProduct, useRegularStock);
-                regularProduct.setQuantity(regularProduct.getQuantity() - useRegularStock);
+                if (useRegularStock > 0) {
+                    receipt.addItem(regularProduct, useRegularStock);
+                    regularProduct.setQuantity(regularProduct.getQuantity() - useRegularStock);
+                }
             }
         }
     }

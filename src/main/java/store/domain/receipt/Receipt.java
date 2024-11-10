@@ -93,9 +93,14 @@ public class Receipt {
     }
 
     private void printItems() {
-        items.forEach((productName, item) ->
-                System.out.printf(ITEM_FORMAT + "%n", productName, item.getQuantity(), item.getPrice() * item.getPaidQuantity())
-        );
+        for (Map.Entry<String, ReceiptItem> entry : items.entrySet()) {
+            String productName = entry.getKey();
+            ReceiptItem item = entry.getValue();
+            int totalQuantity = item.getQuantity();  // 여기서 무료 증정품이 포함된 수량을 가져옴
+            int pricePerItem = item.getPrice();
+            int totalPrice = totalQuantity * pricePerItem;  // 문제: 무료 증정품까지 포함해서 계산됨
+            System.out.printf(ITEM_FORMAT + "\n", productName, totalQuantity, totalPrice);
+        }
     }
 
     private void printFreeItems() {
