@@ -116,6 +116,12 @@ public class Store {
     private void processPromotionProduct(Product product, int orderQuantity, Receipt receipt, Map<String, Integer> freeItems) {
 
         Promotion promo = promotions.get(product.getPromotion());
+
+        if (!promo.isValidOnDate(DateTimes.now().toLocalDate())) {
+            processRegularProduct(product,orderQuantity,receipt);
+            return;
+        }
+
         int buyCount = promo.getBuy();
         int getCount = promo.getGet();
 
@@ -193,8 +199,19 @@ public class Store {
     }
 
     private boolean isPromotionProduct(Product product) {
-        return product.getPromotion() != null && product.getQuantity() > 0
-                && promotions.containsKey(product.getPromotion());
+        return product.getPromotion() != null &&
+                promotions.containsKey(product.getPromotion()) &&
+                isValidPromotion(product);
+    }
+
+    private boolean isValidPromotion(Product product) {
+        String promotionName = product.getPromotion();
+        if (promotionName == null || !promotions.containsKey(promotionName)) {
+            return false;
+        }
+
+        Promotion promotion = promotions.get(promotionName);
+        return promotion != null && promotion.isValidOnDate(DateTimes.now().toLocalDate());
     }
 
     private void processRegularProduct(Product product, int orderQuantity, Receipt receipt) {
@@ -222,12 +239,6 @@ public class Store {
                 .orElse(null);
     }
 
-    private int getTotalAvailableQuantity(String productName) {
-        return products.stream()
-                .filter(p -> p.getName().equals(productName))
-                .mapToInt(Product::getQuantity)
-                .sum();
-    }
 
     public List<Product> getProducts() {
         return new ArrayList<>(products);  // 방어적 복사
