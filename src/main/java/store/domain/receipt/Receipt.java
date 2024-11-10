@@ -7,17 +7,6 @@ import java.util.Map;
 
 public class Receipt {
 
-    private static final String RECEIPT_HEADER = "==============W 편의점================";
-    private static final String RECEIPT_COLUMNS = "%-8s %6s %12s";
-    private static final String ITEM_FORMAT = "%-8s %6d %,12d";
-    private static final String FREE_ITEM_HEADER = "=============증     정===============";
-    private static final String FREE_ITEM_FORMAT = "%-8s %6d";
-    private static final String RECEIPT_DIVIDER = "====================================";
-    private static final String TOTAL_FORMAT = "총구매액   %6d %,12d";
-    private static final String PROMOTION_DISCOUNT_FORMAT = "행사할인         -%,11d";
-    private static final String MEMBERSHIP_DISCOUNT_FORMAT = "멤버십할인       -%,11d";
-    private static final String FINAL_AMOUNT_FORMAT = "내실돈           %,12d";
-
     private Map<String, ReceiptItem> items;
     private int promotionDiscount;
     private int membershipDiscount;

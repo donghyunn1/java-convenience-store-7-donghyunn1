@@ -35,10 +35,8 @@ public class StoreController {
         if (orderItems.isEmpty()) {
             return;
         }
-
         orderItems = store.promotionAddSuggestion(orderItems);
         boolean useMembership = inputView.inputMembership();
-
         Receipt receipt = store.processOrder(orderItems, useMembership);
         outputView.printReceipt(receipt);
     }

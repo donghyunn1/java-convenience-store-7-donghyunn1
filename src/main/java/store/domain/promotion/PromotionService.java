@@ -4,7 +4,6 @@ import store.domain.file.FileLoader;
 import store.domain.product.Product;
 import store.domain.receipt.Receipt;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class PromotionService {
@@ -61,7 +60,6 @@ public class PromotionService {
         if (!isPromotionProduct(product)) {
             return 0;
         }
-
         Promotion promotion = promotions.get(product.getPromotion());
         int buyCount = promotion.getBuy();
         int getCount = promotion.getGet();

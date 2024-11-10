@@ -1,8 +1,9 @@
 package store.domain.product;
 
-import java.util.List;
 
 public class Product {
+
+    private static final String ERROR_DECREASE_QUANTITY = "[ERROR] 재고가 충분하지 않습니다.";
 
     private String name;
     private int price;
@@ -38,7 +39,7 @@ public class Product {
 
     public void decreaseQuantity(int amount) {
         if (amount > this.quantity) {
-            throw new IllegalArgumentException("[ERROR] 재고가 충분하지 않습니다.");
+            throw new IllegalArgumentException(ERROR_DECREASE_QUANTITY);
         }
         this.quantity -= amount;
     }
