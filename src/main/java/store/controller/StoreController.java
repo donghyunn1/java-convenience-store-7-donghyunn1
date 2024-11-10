@@ -12,11 +12,13 @@ public class StoreController {
     private final Store store;
     private final InputView inputView;
     private final OutputView outputView;
+    private final OrderParser orderParser;
 
     public StoreController() {
         this.store = new Store();
         this.inputView = new InputView();
         this.outputView = new OutputView();
+        this.orderParser = new OrderParser(store.getProducts());
     }
 
     public void run() {
@@ -45,7 +47,7 @@ public class StoreController {
         while (true) {
             try {
                 String orderInput = inputView.inputOrder();
-                return OrderParser.parse(orderInput, store.getProducts());
+                return orderParser.parse(orderInput);
             } catch (IllegalArgumentException e) {
                 outputView.printError(e.getMessage());
             }
