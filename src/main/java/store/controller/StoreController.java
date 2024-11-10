@@ -29,13 +29,27 @@ public class StoreController {
 
     private void processOrder() {
         displayProducts();
-        Map<String, Integer> orderItems = OrderParser.parse(inputView.inputOrder());
-        orderItems = store.promotionAddSuggestion(orderItems);
+        Map<String, Integer> orderItems = receiveValidOrder();
+        if (orderItems.isEmpty()) {
+            return;
+        }
 
+        orderItems = store.promotionAddSuggestion(orderItems);
         boolean useMembership = inputView.inputMembership();
 
         Receipt receipt = store.processOrder(orderItems, useMembership);
         outputView.printReceipt(receipt);
+    }
+
+    private Map<String, Integer> receiveValidOrder() {
+        while (true) {
+            try {
+                String orderInput = inputView.inputOrder();
+                return OrderParser.parse(orderInput, store.getProducts());
+            } catch (IllegalArgumentException e) {
+                outputView.printError(e.getMessage());
+            }
+        }
     }
 
     private void displayProducts() {
