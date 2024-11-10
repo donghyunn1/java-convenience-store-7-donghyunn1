@@ -16,8 +16,8 @@ public class OutputView {
     private static final String FREE_ITEMS_FORMAT = "%-8s %6d";
     private static final String RECEIPT_DIVIDER = "====================================";
     private static final String RECEIPT_TOTAL = "총구매액   %6d %,12d";
-    private static final String RECEIPT_PROMOTION = "행사할인         -%,11d";
-    private static final String RECEIPT_MEMBERSHIP = "멤버십할인       -%,11d";
+    private static final String RECEIPT_PROMOTION = "행사할인         %,12d";
+    private static final String RECEIPT_MEMBERSHIP = "멤버십할인       %,12d";
     private static final String RECEIPT_FINAL = "내실돈           %,12d";
 
     public void printIntroduction() {
@@ -49,7 +49,7 @@ public class OutputView {
 
     private void printReceiptItems(Receipt receipt) {
         receipt.getItems().forEach((name, item) -> {
-            System.out.printf(RECEIPT_ITEMS_FORMAT + "%n", name, item.getQuantity(), item.getPrice() * item.getPaidQuantity());
+            System.out.printf(RECEIPT_ITEMS_FORMAT + "%n", name, item.getQuantity(), item.getPrice() * item.getQuantity());
         });
     }
 
@@ -68,8 +68,8 @@ public class OutputView {
 
     private void printReceiptSummary(Receipt receipt) {
         System.out.printf(RECEIPT_TOTAL + "%n", receipt.getTotalQuantity(), receipt.getTotalAmount());
-        System.out.printf(RECEIPT_PROMOTION + "%n", receipt.getPromotionDiscount());
-        System.out.printf(RECEIPT_MEMBERSHIP + "%n", receipt.getMembershipDiscount());
+        System.out.printf(RECEIPT_PROMOTION + "%n", -receipt.getPromotionDiscount());
+        System.out.printf(RECEIPT_MEMBERSHIP + "%n", -receipt.getMembershipDiscount());
         System.out.printf(RECEIPT_FINAL + "%n", receipt.getFinalAmount());
         System.out.println();
     }
