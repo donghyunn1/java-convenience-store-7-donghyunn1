@@ -65,7 +65,7 @@ public class Receipt {
         return items;
     }
 
-    private int getTotalQuantity() {
+    public int getTotalQuantity() {
         return items.values().stream()
                 .mapToInt(ReceiptItem::getQuantity)
                 .sum();
@@ -75,56 +75,11 @@ public class Receipt {
         this.membershipDiscount = membershipDiscount;
     }
 
-    private int getFinalAmount() {
+    public int getFinalAmount() {
         return getTotalAmount()  - promotionDiscount - membershipDiscount;
     }
 
-    public void print() {
-        printHeader();
-        printItems();
-        printFreeItems();
-        printDivider();
-        printSummary();
-    }
-
-    private void printHeader() {
-        System.out.println(RECEIPT_HEADER);
-        System.out.println(String.format(RECEIPT_COLUMNS, "상품명", "수량", "금액"));
-    }
-
-    private void printItems() {
-        for (Map.Entry<String, ReceiptItem> entry : items.entrySet()) {
-            String productName = entry.getKey();
-            ReceiptItem item = entry.getValue();
-            int totalQuantity = item.getQuantity();  // 여기서 무료 증정품이 포함된 수량을 가져옴
-            int pricePerItem = item.getPrice();
-            int totalPrice = totalQuantity * pricePerItem;  // 문제: 무료 증정품까지 포함해서 계산됨
-            System.out.printf(ITEM_FORMAT + "\n", productName, totalQuantity, totalPrice);
-        }
-    }
-
-    private void printFreeItems() {
-        System.out.println(FREE_ITEM_HEADER);
-        items.forEach((productName, item) -> {
-            if (item.getFreeQuantity() > 0) {
-                System.out.printf(FREE_ITEM_FORMAT + "%n",
-                        productName, item.getFreeQuantity());
-            }
-        });
-    }
-
-    private void printDivider() {
-        System.out.println(RECEIPT_DIVIDER);
-    }
-
-    private void printSummary() {
-        System.out.printf(TOTAL_FORMAT + "%n",
-                getTotalQuantity(), getTotalAmount());
-        System.out.printf(PROMOTION_DISCOUNT_FORMAT + "%n",
-                promotionDiscount);
-        System.out.printf(MEMBERSHIP_DISCOUNT_FORMAT + "%n",
-                membershipDiscount);
-        System.out.printf(FINAL_AMOUNT_FORMAT + "%n",
-                getFinalAmount());
+    public int getMembershipDiscount() {
+        return membershipDiscount;
     }
 }

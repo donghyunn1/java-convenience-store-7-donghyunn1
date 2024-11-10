@@ -28,14 +28,20 @@ public class StoreController {
     }
 
     private void processOrder() {
-        store.displayProducts();
+        displayProducts();
         Map<String, Integer> orderItems = OrderParser.parse(inputView.inputOrder());
         orderItems = store.promotionAddSuggestion(orderItems);
 
         boolean useMembership = inputView.inputMembership();
 
         Receipt receipt = store.processOrder(orderItems, useMembership);
-        receipt.print();
+        outputView.printReceipt(receipt);
+    }
+
+    private void displayProducts() {
+        outputView.printIntroduction();
+        store.getProducts()
+                .forEach(outputView::printProduct);
     }
 }
 

@@ -228,4 +228,9 @@ public class Store {
                 .mapToInt(Product::getQuantity)
                 .sum();
     }
+
+    public List<Product> getProducts() {
+        return new ArrayList<>(products);  // 방어적 복사
+    }
+
 }
