@@ -107,29 +107,21 @@ public class Store {
             processRegularProduct(product,orderQuantity,receipt);
             return;
         }
-
         int buyCount = promo.getBuy();
         int getCount = promo.getGet();
-
-        // 프로모션 재고와 일반 재고 찾기
         Product promotionProduct = findPromotionProduct(product.getName());
         Product regularProduct = findRegularProduct(product.getName());
-
-        // 프로모션 상품으로 처리할 수 있는 최대 수량 계산
         int maxPromotionQuantity = promotionProduct.getQuantity();
         int maxFullSets = maxPromotionQuantity / (buyCount + getCount);
         int maxPromotionSets = Math.min(orderQuantity / (buyCount + getCount), maxFullSets);
 
-        // 프로모션 세트로 처리되는 수량
         int promotionPaidItems = maxPromotionSets * buyCount;  // 실제 구매 수량
         int promotionFreeItems = maxPromotionSets * getCount;  // 증정 수량
         int totalPromotionSetItems = promotionPaidItems + promotionFreeItems;
 
-        // 남은 프로모션 재고 계산
         int remainingPromotionStock = maxPromotionQuantity - totalPromotionSetItems;
         int remainingOrderQuantity = orderQuantity - totalPromotionSetItems;
 
-        // 프로모션 미적용 수량 계산
         int nonPromotionItems = remainingOrderQuantity;
         if (nonPromotionItems > 0) {
             if (!askNonPromotionPurchase(product, nonPromotionItems)) {
@@ -139,7 +131,6 @@ public class Store {
             }
         }
 
-        // 프로모션 상품 처리 (세트)
         if (promotionPaidItems > 0) {
             receipt.addItem(promotionProduct, promotionPaidItems);  // 실제 구매 수량만 추가
             receipt.setFreeItems(Map.of(product.getName(), promotionFreeItems));  // 증정 수량 설정
@@ -147,9 +138,7 @@ public class Store {
             promotionProduct.setQuantity(promotionProduct.getQuantity() - totalPromotionSetItems);
         }
 
-        // 남은 수량 처리
         if (remainingOrderQuantity > 0) {
-            // 먼저 남은 프로모션 재고 사용
             if (remainingPromotionStock > 0) {
                 int usePromotionStock = Math.min(remainingPromotionStock, remainingOrderQuantity);
                 receipt.addItem(promotionProduct, usePromotionStock);  // 추가 구매 수량
@@ -157,7 +146,6 @@ public class Store {
                 remainingOrderQuantity -= usePromotionStock;
             }
 
-            // 일반 재고 사용
             if (remainingOrderQuantity > 0 && regularProduct != null) {
                 int useRegularStock = Math.min(remainingOrderQuantity, regularProduct.getQuantity());
                 if (useRegularStock > 0) {
